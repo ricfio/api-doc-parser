@@ -251,9 +251,13 @@ export default async function (
     resource.fields?.forEach((field) => {
       const name = inflection.camelize(field.name).replace(/Ids?$/, "");
 
-      const guessedResource = resources.find(
-        (res) => res.title === inflection.classify(name)
-      );
+      const guessedResource = resources.find((resource) => {
+        if (resource.title !== inflection.classify(name)) {
+          return false;
+        }
+        const resFieldId = resource.fields?.find((field) => field.name === 'id');
+        return resFieldId === undefined || resFieldId.type === field.type;
+      });
       if (!guessedResource) {
         return;
       }
